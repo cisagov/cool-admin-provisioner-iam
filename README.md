@@ -2,33 +2,39 @@
 
 [![GitHub Build Status](https://github.com/cisagov/cool-admin-provisioner-iam/workflows/build/badge.svg)](https://github.com/cisagov/cool-admin-provisioner-iam/actions)
 
-This is a generic skeleton project that can be used to quickly get a
-new [cisagov](https://github.com/cisagov) [Terraform
-module](https://www.terraform.io/docs/modules/index.html) GitHub
-repository started.  This skeleton project contains [licensing
-information](LICENSE), as well as [pre-commit
-hooks](https://pre-commit.com) and
-[GitHub Actions](https://github.com/features/actions) configurations
-appropriate for the major languages that we use.
+This is a Terraform deployment for creating IAM resources for those
+users allowed to provision any environment in the COOL.
 
-See [here](https://www.terraform.io/docs/modules/index.html) for more
-details on Terraform modules and the standard module structure.
+## Pre-requisites ##
+
+- [Terraform](https://www.terraform.io/) installed on your system.
+- An accessible AWS S3 bucket to store Terraform state
+  (specified in [backend.tf](backend.tf)).
+- An accessible AWS DynamoDB database to store the Terraform state lock
+  (specified in [backend.tf](backend.tf)).
+- Access to all of the Terraform remote states specified in
+  [remote_states.tf](remote_states.tf).
+- User accounts for all users must have been created previously.  We
+  recommend using the
+  [`cisagov/cool-users-non-admin`](https://github.com/cisagov/cool-users-non-admin)
+  repository to create users.
 
 ## Usage ##
 
-```hcl
-module "example" {
-  source = "github.com/cisagov/cool-admin-provisioner-iam"
+1. Create a Terraform workspace (if you haven't already done so) by running
+   `terraform workspace new <workspace_name>`
+1. Create a `<workspace_name>.tfvars` file with all of the required
+  variables (see [Inputs](#Inputs) below for details):
 
-  aws_region            = "us-west-1"
-  aws_availability_zone = "b"
-  subnet_id             = "subnet-0123456789abcdef0"
-}
-```
+  ```hcl
+  users = [
+    "firstname1.lastname1",
+    "firstname2.lastname2"
+  ]
+  ```
 
-## Examples ##
-
-- [Basic usage](https://github.com/cisagov/cool-admin-provisioner-iam/tree/develop/examples/basic_usage)
+1. Run the command `terraform init`.
+1. Run the command `terraform apply -var-file=<workspace_name>.tfvars`.
 
 ## Requirements ##
 
@@ -42,6 +48,8 @@ module "example" {
 | Name | Version |
 |------|---------|
 | aws | ~> 3.38 |
+| aws.users | ~> 3.38 |
+| terraform | n/a |
 
 ## Modules ##
 
@@ -51,41 +59,38 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_instance.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
-| [aws_ami.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_default_tags.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/default_tags) | data source |
+| [aws_iam_group.admin_provisioners](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_group) | resource |
+| [aws_iam_group_policy_attachment.admin_provisioners](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_group_policy_attachment) | resource |
+| [aws_iam_policy.provision](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_user_group_membership.admin_provisioners](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_group_membership) | resource |
+| [aws_caller_identity.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.provision](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [terraform_remote_state.users](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/data-sources/remote_state) | data source |
 
 ## Inputs ##
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| ami\_owner\_account\_id | The ID of the AWS account that owns the Example AMI, or "self" if the AMI is owned by the same account as the provisioner. | `string` | `"self"` | no |
-| aws\_availability\_zone | The AWS availability zone to deploy into (e.g. a, b, c, etc.). | `string` | `"a"` | no |
+| admin\_provisioners\_group\_name | The name of the IAM group whose members are allowed to provision any environment. | `string` | `"admin_provisioners"` | no |
 | aws\_region | The AWS region to deploy into (e.g. us-east-1). | `string` | `"us-east-1"` | no |
-| subnet\_id | The ID of the AWS subnet to deploy into (e.g. subnet-0123456789abcdef0). | `string` | n/a | yes |
+| provision\_policy\_description | The description to associate with the IAM policy in the Users account that allows the admin provisioner group to assume all roles needed in order to provision any environment. | `string` | `"Allows the admin provisioner group to assume all roles needed in order to provision any environment."` | no |
+| provision\_policy\_name | The name of the IAM policy in the Users account that allows the admin provisioner group to assume all roles needed in order to provision any environment. | `string` | `"AssumeProvisionAnyEnvironment"` | no |
+| provision\_role\_name | The name of the IAM role in an account that includes all permissions necessary to provision the environment in that account.  If this role does not exist in an account, an environment cannot be provisioned in that account. | `string` | `"ProvisionAccount"` | no |
+| startstopssmsession\_role\_name | The name of the IAM role in an account that includes all permissions necessary to start and stop an SSM session in that account. | `string` | `"StartStopSSMSession"` | no |
+| tags | Tags to apply to all AWS resources created. | `map(string)` | `{}` | no |
+| users | A list containing the usernames of users that exist in the Users account who are allowed to provision any environment.  Example: [ "firstname1.lastname1", "firstname2.lastname2" ]. | `list(string)` | n/a | yes |
 
 ## Outputs ##
 
 | Name | Description |
 |------|-------------|
-| arn | The EC2 instance ARN. |
-| availability\_zone | The AZ where the EC2 instance is deployed. |
-| id | The EC2 instance ID. |
-| private\_ip | The private IP of the EC2 instance. |
-| subnet\_id | The ID of the subnet where the EC2 instance is deployed. |
+| admin\_provisioners\_group | The IAM group whose members are allowed to provision any environment. |
+| admin\_provisioners\_policy | The IAM policy in the Users account that allows the admin provisioners group to assume the provisioning role in any account. |
 
 ## Notes ##
 
 Running `pre-commit` requires running `terraform init` in every directory that
-contains Terraform code. In this repository, these are the main directory and
-every directory under `examples/`.
-
-## New Repositories from a Skeleton ##
-
-Please see our [Project Setup guide](https://github.com/cisagov/development-guide/tree/develop/project_setup)
-for step-by-step instructions on how to start a new repository from
-a skeleton. This will save you time and effort when configuring a
-new repository!
+contains Terraform code. In this repository, this is just the main directory.
 
 ## Contributing ##
 
