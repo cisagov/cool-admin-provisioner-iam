@@ -16,6 +16,19 @@ data "aws_iam_policy_document" "provision" {
 
     sid = "AllowAllAccountRoles"
   }
+
+  statement {
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession",
+    ]
+
+    effect = "Allow"
+
+    resources = local.additional_required_roles
+
+    sid = "AllowAdditionalRequiredRoles"
+  }
 }
 
 # The policy that allows assumption of all roles needed in order to provision
