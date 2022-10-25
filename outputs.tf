@@ -1,24 +1,9 @@
-output "arn" {
-  value       = aws_instance.example.arn
-  description = "The EC2 instance ARN."
+output "admin_provisioners_group" {
+  value       = aws_iam_group.admin_provisioners
+  description = "The IAM group whose members are allowed to provision any environment."
 }
 
-output "availability_zone" {
-  value       = aws_instance.example.availability_zone
-  description = "The AZ where the EC2 instance is deployed."
-}
-
-output "id" {
-  value       = aws_instance.example.id
-  description = "The EC2 instance ID."
-}
-
-output "private_ip" {
-  value       = aws_instance.example.private_ip
-  description = "The private IP of the EC2 instance."
-}
-
-output "subnet_id" {
-  value       = aws_instance.example.subnet_id
-  description = "The ID of the subnet where the EC2 instance is deployed."
+output "admin_provisioners_policy" {
+  value       = aws_iam_policy.provision
+  description = "The IAM policy in the Users account that allows the admin provisioners group to assume the provisioning role in any account."
 }
