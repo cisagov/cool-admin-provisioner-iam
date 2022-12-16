@@ -24,7 +24,7 @@ users allowed to provision any environment in the COOL.
 1. Create a Terraform workspace (if you haven't already done so) by running
    `terraform workspace new <workspace_name>`
 1. Create a `<workspace_name>.tfvars` file with all of the required
-  variables (see [Inputs](#Inputs) below for details):
+  variables (see [Inputs](#inputs) below for details):
 
   ```hcl
   users = [
