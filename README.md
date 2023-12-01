@@ -36,19 +36,20 @@ users allowed to provision any environment in the COOL.
 1. Run the command `terraform init`.
 1. Run the command `terraform apply -var-file=<workspace_name>.tfvars`.
 
+<!-- BEGIN_TF_DOCS -->
 ## Requirements ##
 
 | Name | Version |
 |------|---------|
 | terraform | ~> 1.0 |
-| aws | ~> 3.38 |
+| aws | ~> 4.9 |
 
 ## Providers ##
 
 | Name | Version |
 |------|---------|
-| aws | ~> 3.38 |
-| aws.users | ~> 3.38 |
+| aws | ~> 4.9 |
+| aws.users | ~> 4.9 |
 | terraform | n/a |
 
 ## Modules ##
@@ -86,6 +87,7 @@ No modules.
 |------|-------------|
 | admin\_provisioners\_group | The IAM group whose members are allowed to provision any environment. |
 | admin\_provisioners\_policy | The IAM policy in the Users account that allows the admin provisioners group to assume the provisioning role in any account. |
+<!-- END_TF_DOCS -->
 
 ## Notes ##
 
