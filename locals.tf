@@ -16,10 +16,8 @@ locals {
   # provision environments.
   additional_required_roles = [
     data.terraform_remote_state.dns_certboto.outputs.provisioncertificatereadroles_role.arn,
-    data.terraform_remote_state.images_parameterstore-production.outputs.parameterstorereadonly_role.arn,
-    data.terraform_remote_state.images_parameterstore-production.outputs.provisionparameterstorereadroles_role.arn,
-    data.terraform_remote_state.images_parameterstore-staging.outputs.parameterstorereadonly_role.arn,
-    data.terraform_remote_state.images_parameterstore-staging.outputs.provisionparameterstorereadroles_role.arn,
+    data.terraform_remote_state.images_parameterstore.outputs.parameterstorereadonly_role.arn,
+    data.terraform_remote_state.images_parameterstore.outputs.provisionparameterstorereadroles_role.arn,
     data.terraform_remote_state.master.outputs.organizationsreadonly_role.arn,
     data.terraform_remote_state.terraform.outputs.access_terraform_backend_role.arn
   ]
