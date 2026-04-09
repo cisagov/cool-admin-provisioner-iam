@@ -42,14 +42,14 @@ users allowed to provision any environment in the COOL.
 ## Requirements ##
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | terraform | ~> 1.1 |
 | aws | ~> 6.7 |
 
 ## Providers ##
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | aws | ~> 6.7 |
 | aws.users | ~> 6.7 |
 | terraform | n/a |
@@ -61,7 +61,7 @@ No modules.
 ## Resources ##
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_iam_group.admin_provisioners](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_group) | resource |
 | [aws_iam_group_policy_attachment.admin_provisioners](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_group_policy_attachment) | resource |
 | [aws_iam_policy.provision](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
@@ -77,7 +77,7 @@ No modules.
 ## Inputs ##
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | admin\_provisioners\_group\_name | The name of the IAM group whose members are allowed to provision any environment. | `string` | `"admin_provisioners"` | no |
 | aws\_region | The AWS region to deploy into (e.g. us-east-1). | `string` | `"us-east-1"` | no |
 | provision\_policy\_description | The description to associate with the IAM policy in the Users account that allows the admin provisioner group to assume all roles needed in order to provision any environment. | `string` | `"Allows the admin provisioner group to assume all roles needed in order to provision any environment."` | no |
@@ -91,7 +91,7 @@ No modules.
 ## Outputs ##
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | admin\_provisioners\_group | The IAM group whose members are allowed to provision any environment. |
 | admin\_provisioners\_policy | The IAM policy in the Users account that allows the admin provisioners group to assume the provisioning role in any account. |
 <!-- END_TF_DOCS -->
